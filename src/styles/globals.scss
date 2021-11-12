@@ -4,4 +4,60 @@
   padding: 0;
 }
 
-// TODO
+:root {
+  --highlight: #FF57B2;
+  --heading: #F8F8F8;
+  --background: #1A1D23;
+  --info: #BBBBBB;
+  --body: #D7D7D7;
+
+  --gray: #34383f;
+  --gray-800: #111318;
+  --black: #0a0b0e;
+};
+
+::-webkit-scrollbar {
+  width: 10px;
+};
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--gray-800);
+
+  &:hover {
+    background-color: var(--black)
+  };
+};
+
+::-webkit-scrollbar-track {
+  background-color: var(--gray);
+};
+
+html {
+  font-size: 16px;
+
+  @media (max-width: 1080px) {
+    font-size: 15.5px;
+  }
+
+  @media (max-width: 720px) {
+    font-size: 14px;
+  }
+};
+
+h1, h2, h3, h4, h5, p, button, input, time {
+  font-family: "Inter", Arial, sans-serif;
+};
+
+body {
+  background-color: var(--background);
+  padding-bottom: 2rem;
+};
+
+button {
+  transition: filter .2s;
+
+  &:hover {
+    cursor: pointer;
+    filter: brightness(0.5);
+  };
+};

@@ -1,1 +1,50 @@
-// TODO
+.container {
+  margin: 2rem auto;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  a {
+    display: inline-flex;
+    flex-direction: column;
+
+    & > h1 {
+      font-weight: 700;
+      font-size: 1.75rem;
+      line-height: 2.125rem;
+      color: var(--heading);
+      margin-bottom: 8px;
+      transition: color .5s;
+    };
+
+    & > p {
+      font-weight: 400;
+      font-size: 1.125rem;
+      line-height: 1.4rem;
+      color: var(--body);
+    };
+
+    & + a {
+      margin-top: 2rem;
+    };
+
+    &:hover {
+      cursor: pointer;
+
+      & > h1 {
+        color: var(--highlight);
+      };
+    };
+  };
+
+  button {
+    margin-top: 2rem;
+    font-size: 1.125rem;
+    background-color: transparent;
+    font-weight: 600;
+    line-height: 1.4rem;
+    border: none;
+    color: var(--highlight);
+  };
+};
