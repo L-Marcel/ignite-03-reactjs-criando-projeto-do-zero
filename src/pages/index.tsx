@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next';
 import Header from '../components/Header';
-import { FiCalendar, FiUser, FiClock } from "react-icons/fi";
+import { FiCalendar, FiUser } from "react-icons/fi";
 
 import { getPrismicClient } from '../services/prismic';
 import Prismic from '@prismicio/client';
@@ -46,7 +46,7 @@ export default function Home({ postsPagination }: HomeProps) {
           results: res.results.map(post => {
             return {
               uid: post.uid,
-              first_publication_date: dateFormat(new Date(post.first_publication_date)),
+              first_publication_date: post.first_publication_date,
               data: {
                 title: post.data.title,
                 subtitle: post.data.subtitle,
@@ -74,8 +74,8 @@ export default function Home({ postsPagination }: HomeProps) {
             const { uid, first_publication_date: publicationDate } = post; 
             const { title, subtitle, author } = post.data;
 
+            //So estava funcionando o teste do Jest quando eu deixava aqui
             const date = dateFormat(new Date(publicationDate));
-            console.log("mds" + date);
 
             return (
               <Link key={uid} href={`/post/${uid}`}>
@@ -108,7 +108,7 @@ export const getStaticProps: GetStaticProps = async () => {
     Prismic.Predicates.at("document.type", "post"),
     {
       pageSize: 4,
-      orderings: '[document.first_publication_date]'
+      orderings: '[document.first_publication_date desc]'
     }
   );
 

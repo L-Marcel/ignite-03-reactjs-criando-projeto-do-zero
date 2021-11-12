@@ -1,6 +1,6 @@
 .page {
-  max-width: 700px;
-  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
 
   a {
@@ -24,7 +24,7 @@
   time, p {
     font-weight: 400;
     font-size: 0.8rem;
-    line-height: 1rem;
+    line-height: 1rem !important;
     margin-right: 1.125rem;
   };
 };
