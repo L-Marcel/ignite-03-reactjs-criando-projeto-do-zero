@@ -28,3 +28,25 @@
     margin-right: 1.125rem;
   };
 };
+
+.preview {
+  width: 700px;
+  background-color: white;
+  font-family: "Inter", Arial, sans-serif;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.2rem;
+  padding: 1.125rem;
+
+  a {
+    color: black;
+  };
+
+  transition: filter .2s;
+
+  &:hover {
+    cursor: pointer;
+    filter: brightness(0.5);
+  };
+};

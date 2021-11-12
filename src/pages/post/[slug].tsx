@@ -4,6 +4,7 @@ import { FiCalendar, FiUser, FiClock } from "react-icons/fi";
 import { getPrismicClient } from '../../services/prismic';
 import Head from "next/head";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import commonStyles from '../../styles/common.module.scss';
 import { dateFormat } from '../../utils/dateFormat';
@@ -11,9 +12,11 @@ import styles from './post.module.scss';
 import Prismic from "@prismicio/client";
 import Header from '../../components/Header';
 import { RichText } from "prismic-dom";
+import { useEffect } from 'react';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -28,22 +31,20 @@ interface Post {
     }[];
   };
 }
-
-type Time = {
-  content: {
-    heading: string;
-    body: {
-      text: string;
-    }[];
-  }[];
-  time: number;
-};
-
 interface PostProps {
   post: Post;
+  preview: boolean;
+  prevpost: { 
+    title: string;
+    uid: string;
+  } | null, 
+  nextpost: { 
+    title: string;
+    uid: string;
+  } | null
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, preview, nextpost, prevpost }: PostProps) {
   const router = useRouter();
 
   if(router.isFallback){
@@ -58,6 +59,18 @@ export default function Post({ post }: PostProps) {
       </>
     );
   };
+
+  useEffect(() => {
+    let script = document.createElement("script");
+    let anchor = document.getElementById("comments");
+    script.setAttribute("src", "https://utteranc.es/client.js");
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async", "true");
+    script.setAttribute("repo", "L-Marcel/ignite-03-reactjs-criando-projeto-do-zero");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "photon-dark");
+    anchor.appendChild(script);
+  }, []);
 
   const time = post.data.content.reduce((count, item) => {
     let perMinute = 200;
@@ -94,6 +107,9 @@ export default function Post({ post }: PostProps) {
               <FiClock/>
               <time>{Math.ceil(time)} min</time>
             </div>
+            <div className={commonStyles.info}>
+              <p>Atualizado em {dateFormat(new Date(post.last_publication_date), true)}</p>
+            </div>
           </section>
           {
             post.data.content.map((content, i) => {
@@ -106,6 +122,33 @@ export default function Post({ post }: PostProps) {
                 </section>
               );
             })
+          }
+          <hr/>
+          <section className={styles.buttonGroup}>
+            { prevpost && <div>
+              <p>{prevpost.title}</p>
+              <Link href={`/post/${prevpost.uid}`}>
+                <a>Post anterior</a>
+              </Link>
+            </div> } 
+            { nextpost && <div>
+              <p>{nextpost.title}</p>
+              <Link href={`/post/${nextpost.uid}`}>
+                <a>Próximo post</a>
+              </Link>
+            </div> }
+          </section>
+          <section>
+            <div id="comments"></div>
+          </section>
+          {
+            preview && (
+              <aside className={commonStyles.preview}>
+                <Link href="/api/exit-preview">
+                  <a>Sair do modo Preview</a>
+                </Link>
+              </aside>
+            )
           }
         </div>
       </main>
@@ -132,16 +175,66 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({ params, preview = false, previewData }) => {
   const { slug } = params;
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID("post", String(slug), {});
+  const response = await prismic.getByUID("post", String(slug), {
+    ref: previewData?.ref ?? null,
+  });
+
+  const prevpost = await prismic.query(
+    Prismic.predicates.at("document.type", "post"),
+    {
+      ref: previewData?.ref ?? null,
+      pageSize: 1,
+      after: response.id,
+      orderings: '[document.first_publication_date desc]'
+    }
+  ).then(res => {
+    let item = res.results[0];
+
+    if(item.id !== response.id) {
+      return { 
+        title: item.data.title,
+        uid: item.uid
+      };
+    };
+
+    return null;
+  }).catch(() => {
+    return null;
+  });
+
+  const nextpost = await prismic.query(
+    Prismic.predicates.at("document.type", "post"),
+    {
+      ref: previewData?.ref ?? null,
+      pageSize: 1,
+      after: response.id,
+      orderings: '[document.first_publication_date]'
+    }
+  ).then(res => {
+    let item = res.results[0];
+
+    if(item.id !== response.id) {
+      return { 
+        title: item.data.title,
+        uid: item.uid
+      };
+    };
+
+    return null;
+  }).catch(() => {
+    return null;
+  });
+
   const post = response.data;
 
   return {
     props: {
       post: {
         first_publication_date: response.first_publication_date,
+        last_publication_date: response.last_publication_date,
         data: {
           title: post.title,
           subtitle: post.subtitle,
@@ -152,7 +245,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           content: post.content
         },
         uid: response.uid
-      }
+      },
+      preview,
+      prevpost,
+      nextpost
     } as PostProps,
     revalidate: 60 * 60
   };

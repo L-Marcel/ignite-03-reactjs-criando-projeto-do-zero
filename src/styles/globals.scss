@@ -44,7 +44,7 @@ html {
   }
 };
 
-h1, h2, h3, h4, h5, p, button, input, time {
+h1, h2, h3, h4, h5, p, button, input, time, a {
   font-family: "Inter", Arial, sans-serif;
 };
 
@@ -60,4 +60,8 @@ button {
     cursor: pointer;
     filter: brightness(0.5);
   };
+};
+
+button + aside {
+  margin-top: 4rem;
 };
