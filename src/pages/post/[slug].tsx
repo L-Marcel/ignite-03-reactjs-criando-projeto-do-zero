@@ -13,6 +13,7 @@ import Prismic from "@prismicio/client";
 import Header from '../../components/Header';
 import { RichText } from "prismic-dom";
 import { useEffect } from 'react';
+import { dateTime } from '../../utils/timeFormat';
 
 interface Post {
   first_publication_date: string | null;
@@ -108,7 +109,7 @@ export default function Post({ post, preview, nextpost, prevpost }: PostProps) {
               <time>{Math.ceil(time)} min</time>
             </div>
             <div className={commonStyles.info}>
-              <p>Atualizado em {dateFormat(new Date(post.last_publication_date), true)}</p>
+              <p>Atualizado em {dateTime(post.last_publication_date? new Date(post.last_publication_date):new Date(post.first_publication_date))}</p>
             </div>
           </section>
           {

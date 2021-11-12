@@ -1,11 +1,16 @@
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
-
-export function dateFormat(date: Date) {
+export function dateTime(date: Date) {
   return format(
     date,
-    "d MMM y",
+    "d MMM Y",
+    {
+      locale: ptBR
+    }
+  ) + ", às " + format(
+    date,
+    "HH:mm",
     {
       locale: ptBR
     }
